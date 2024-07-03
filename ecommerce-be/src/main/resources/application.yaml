@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ecommerce-be
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ecommerce
+    username: dsavc3
+    password: 12345
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org:
+      hibernate: debug
+    web: DEBUG

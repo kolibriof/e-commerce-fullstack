@@ -1,1 +1,100 @@
-<p>login-page works!</p>
+<div class="entry">
+	@if (isLogin) {
+	<mat-card appearance="outlined">
+		<mat-card-content>
+			<form #loginForm="ngForm" (submit)="submitForm(loginForm)">
+				<mat-form-field>
+					<mat-label>Login: </mat-label>
+					<input
+						matInput
+						placeholder="Login... "
+						required
+						type="text"
+						name="login"
+						ngModel />
+				</mat-form-field>
+				<mat-form-field>
+					<mat-label>Password: </mat-label>
+					<input
+						matInput
+						type="password"
+						placeholder="Password... "
+						required
+						name="password"
+						ngModel />
+				</mat-form-field>
+				<mat-card-actions>
+					<button
+						mat-stroked-button
+						type="submit"
+						ngModel
+						[disabled]="loginForm.form.status === 'INVALID'">
+						Login
+					</button>
+				</mat-card-actions>
+				<p>
+					Not a member yet?
+					<span (click)="isLogin = false" class="action-button">Sign up</span>
+				</p>
+			</form>
+		</mat-card-content>
+	</mat-card>
+	} @else {
+	<mat-card appearance="outlined">
+		<mat-card-content>
+			<form #signupForm="ngForm" (submit)="submitForm(signupForm)">
+				<mat-form-field>
+					<mat-label>Login: </mat-label>
+					<input
+						matInput
+						placeholder="Login... "
+						required
+						type="text"
+						name="login"
+						ngModel />
+				</mat-form-field>
+				<mat-form-field>
+					<mat-label>Password: </mat-label>
+					<input
+						matInput
+						type="password"
+						placeholder="Password... "
+						required
+						[minlength]="4"
+						name="password"
+						ngModel />
+				</mat-form-field>
+				<mat-form-field>
+					<mat-label>Repeat password: </mat-label>
+					<input
+						matInput
+						type="password"
+						placeholder="Repeat password... "
+						required
+						[minlength]="4"
+						name="passwordRepeat"
+						ngModel />
+				</mat-form-field>
+				<mat-card-actions>
+					<button
+						mat-stroked-button
+						type="submit"
+						ngModel
+						[disabled]="
+							signupForm.invalid ||
+							signupForm.value.password !== signupForm.value.passwordRepeat ||
+							!signupForm.value.password ||
+							!signupForm.value.passwordRepeat
+						">
+						Login
+					</button>
+				</mat-card-actions>
+				<p>
+					Already a member?
+					<span (click)="isLogin = true" class="action-button">Log In</span>
+				</p>
+			</form>
+		</mat-card-content>
+	</mat-card>
+	}
+</div>
