@@ -31,7 +31,7 @@ public class LoginService {
 
     @Transactional
     public ResponseEntity<String> createNewUser(Users users) {
-        Integer foundUser = this.usersRepo.findByLogin(users.getLogin());
+        Users foundUser = this.usersRepo.findByLogin(users.getLogin());
 
         if(foundUser != null) {
             return new ResponseEntity<>(

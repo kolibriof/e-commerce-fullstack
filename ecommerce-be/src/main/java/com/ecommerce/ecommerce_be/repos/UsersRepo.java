@@ -9,6 +9,7 @@ public interface UsersRepo extends JpaRepository<Users, Integer> {
     @Query("SELECT u.id FROM Users u WHERE u.login = :login AND u.password = :password")
     Integer findByLoginAndPassword(@Param("login") String login, @Param("password") String password);
 
-    @Query("SELECT u.id FROM Users u WHERE u.login = :login")
-    Integer findByLogin(@Param("login") String login);
+    @Query("SELECT u FROM Users u WHERE u.login = :login")
+    Users findByLogin(@Param("login") String login);
+
 }

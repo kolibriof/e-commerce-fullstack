@@ -5,7 +5,7 @@ import { BehaviorSubject } from "rxjs";
 @Injectable({ providedIn: "root" })
 export class LoginService {
 	private readonly url = "http://localhost:8080";
-	private authorized = new BehaviorSubject<boolean>(false);
+	private authorized = new BehaviorSubject<boolean>(true);
 
 	constructor(private http: HttpClient) {}
 

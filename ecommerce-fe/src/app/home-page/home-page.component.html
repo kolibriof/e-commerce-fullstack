@@ -1,1 +1,25 @@
-<p>home-page works!</p>
+<section class="home-page-wrapper">
+	<header class="header">
+		<nav class="navbar-wrapper">
+			<button
+				class="nav-buttons"
+				mat-stroked-button
+				*ngFor="let item of ['HOME', 'PRODUCTS', 'CARD']">
+				{{ item }}
+			</button>
+			<button
+				mat-raised-button
+				class="update-products-button"
+				(click)="updateProducts()">
+				UPDATE PRODUCTS
+			</button>
+		</nav>
+	</header>
+	<div class="products">
+		<app-product
+			*ngFor="let item of receivedProducts | async"
+			[name]="item.name"
+			[desc]="item.description"
+			[img]="item.imglink" />
+	</div>
+</section>

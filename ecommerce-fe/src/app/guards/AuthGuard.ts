@@ -22,8 +22,8 @@ export class AuthGuard implements CanActivate {
 			map((authorized) => {
 				if (!authorized) {
 					this.router.navigate([""]);
+					return authorized;
 				}
-				console.log("call");
 				return authorized;
 			}),
 		);

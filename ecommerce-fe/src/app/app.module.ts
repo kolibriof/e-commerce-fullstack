@@ -8,11 +8,9 @@ import { MatButtonModule } from "@angular/material/button";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { LoginPageComponent } from "./login-page/login-page.component";
-import { ProductsComponent } from "./products/products.component";
 import { CartComponent } from "./cart/cart.component";
 import { PaymentComponent } from "./payment/payment.component";
 import { HomePageComponent } from "./home-page/home-page.component";
-import { NavbarComponent } from "./navbar/navbar.component";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "./guards/AuthGuard";
 import { provideAnimations } from "@angular/platform-browser/animations";
@@ -21,6 +19,7 @@ import {
 	HttpClientModule,
 	provideHttpClient,
 } from "@angular/common/http";
+import { ProductComponent } from "./product/product.component";
 
 const routes: Routes = [
 	{
@@ -47,11 +46,10 @@ const routes: Routes = [
 	declarations: [
 		AppComponent,
 		LoginPageComponent,
-		ProductsComponent,
 		CartComponent,
 		PaymentComponent,
 		HomePageComponent,
-		NavbarComponent,
+		ProductComponent,
 	],
 	imports: [
 		MatButtonModule,
