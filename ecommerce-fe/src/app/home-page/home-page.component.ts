@@ -1,7 +1,15 @@
 import { Component, OnInit } from "@angular/core";
 import { ProductService } from "../services/product-service";
 import { BehaviorSubject, take } from "rxjs";
-import { Product } from "../helpers/constants";
+import { LinksConst, Product, SingleCartItem } from "../helpers/constants";
+import { Router } from "@angular/router";
+import { CartService } from "../services/cart-service";
+
+const NavLinks = {
+	[LinksConst.HOME]: "home",
+	[LinksConst.CART]: "cart",
+	[LinksConst.PRODUCTS]: "products",
+};
 
 @Component({
 	selector: "app-home-page",
@@ -9,11 +17,53 @@ import { Product } from "../helpers/constants";
 	styleUrl: "./home-page.component.css",
 })
 export class HomePageComponent implements OnInit {
+	protected navHeaders = Object.keys(NavLinks);
+	protected userLogin: string = "";
+	protected navLinks = NavLinks;
+	protected cartItems = new BehaviorSubject<SingleCartItem[]>([]);
 	protected receivedProducts = new BehaviorSubject<Product[]>([]);
 
-	constructor(private productService: ProductService) {}
+	constructor(
+		private productService: ProductService,
+		private router: Router,
+		private cartService: CartService,
+	) {}
 
 	ngOnInit(): void {
+		if (localStorage.getItem("ecommerce-loggedin-user")) {
+			const user = JSON.parse(
+				localStorage.getItem("ecommerce-loggedin-user") || "",
+			);
+			this.userLogin = user.login;
+			if (localStorage.getItem("ecommerce-cart-items")) {
+				const itemsForUser = JSON.parse(
+					localStorage.getItem("ecommerce-cart-items") || "{}",
+				);
+				if (itemsForUser[0]?.person.login != this.userLogin) {
+					this.cartService
+						.getCartItems({ id: user.id, username: user.login })
+						.subscribe((data) => {
+							localStorage.setItem(
+								"ecommerce-cart-items",
+								JSON.stringify(data),
+							);
+							this.cartItems.next(data);
+						});
+				} else {
+					this.cartItems.next(itemsForUser);
+				}
+			} else {
+				this.cartService
+					.getCartItems({ id: user.id, username: user.login })
+					.subscribe((data) => {
+						localStorage.setItem("ecommerce-cart-items", JSON.stringify(data));
+						this.cartItems.next(data);
+					});
+			}
+		} else {
+			this.router.navigate(["/login"]);
+		}
+
 		if (localStorage.getItem("ecommerce-products-fe")) {
 			const lsData = JSON.parse(
 				localStorage.getItem("ecommerce-products-fe") || "",
@@ -32,5 +82,11 @@ export class HomePageComponent implements OnInit {
 				localStorage.setItem("ecommerce-products-fe", JSON.stringify(data));
 				this.receivedProducts.next(data);
 			});
+	}
+
+	navigate(path: string) {
+		if (path) {
+			this.router.navigate(["/" + path]);
+		}
 	}
 }

@@ -10,12 +10,13 @@
 	overflow: hidden;
 	transition: 0.1s ease-in-out;
 	box-sizing: border-box;
-	border: 1px solid transparent;
 }
 
-.single-product-wrapper:hover {
-	cursor: pointer;
-	border: 2px solid rgba(67, 71, 85, 0.15);
+.add-icon:hover {
+	color: red;
+}
+.add-icon {
+	transition: 0.1s ease-in-out;
 }
 
 .product-img {
@@ -60,4 +61,15 @@
 	display: -webkit-box;
 	-webkit-line-clamp: 5;
 	-webkit-box-orient: vertical;
+}
+
+.price-tag {
+	display: block;
+	position: absolute;
+	background-color: #ffffff;
+	right: 0;
+	bottom: 0;
+	padding: 0.75rem;
+	border-top-left-radius: 8px;
+	font-weight: bold;
 }

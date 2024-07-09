@@ -19,10 +19,29 @@ export class LoginPageComponent {
 	) {}
 
 	submitForm(form: NgForm) {
+		let lcUserObj;
 		if (form.form.value.passwordRepeat) {
-			this.loginService.createUser(form).subscribe((data) => {});
+			this.loginService.createUser(form).subscribe((data) => {
+				lcUserObj = {
+					id: data,
+					login: form.form.value.login,
+				};
+				localStorage.setItem(
+					"ecommerce-loggedin-user",
+					JSON.stringify(lcUserObj),
+				);
+			});
 		} else {
 			this.loginService.loginUser(form).subscribe((data) => {
+				lcUserObj = {
+					id: data,
+					login: form.form.value.login,
+				};
+				localStorage.setItem(
+					"ecommerce-loggedin-user",
+					JSON.stringify(lcUserObj),
+				);
+
 				this.router.navigate(["home"]);
 			});
 		}

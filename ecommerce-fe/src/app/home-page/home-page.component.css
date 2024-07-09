@@ -16,13 +16,19 @@
 	color: black !important;
 }
 
+.greetings {
+	background-color: #ffffff;
+	padding: 0px 20px 0px 20px;
+	border-radius: 8px;
+}
+
 .products {
 	height: 90%;
 	width: 100%;
 	background-color: #ffffff;
 	padding: 20px;
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(calc(20% - 20px), 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(calc(30% - 20px), 1fr));
 }
 
 .navbar-wrapper {

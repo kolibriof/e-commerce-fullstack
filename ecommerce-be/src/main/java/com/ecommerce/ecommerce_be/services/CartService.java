@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.ecommerce.ecommerce_be.constants.ResponseConstants;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -35,7 +36,7 @@ public class CartService {
         if(this.userExists(request)) {
             List<Cart> foundCartItems = this.cartRepo.findByUserID(request.getId());
             if(foundCartItems.isEmpty()) {
-               return new ResponseEntity<>( this.cartResponse(ResponseConstants.NO_CART_ITEMS_FOUND, request.getUsername()), HttpStatus.NOT_FOUND);
+               return new ResponseEntity<>( this.cartResponse(ResponseConstants.NO_CART_ITEMS_FOUND, request.getUsername()), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseBuilder.buildResponse(foundCartItems), HttpStatus.OK);
         }
@@ -69,6 +70,38 @@ public class CartService {
         return new ResponseEntity<>(this.cartResponse(ResponseConstants.USER_DOESNT_EXIST, request.getUsername()), HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<String> removeProductByRequest(AddNewCartItemRequest request) {
+        if(userExists(request)) {
+            Product foundProduct = this.productsRepo.findByName(request.getProduct_name());
+
+            if(foundProduct == null) {
+                return new ResponseEntity<>(this.cartResponse(ResponseConstants.NO_SUCH_ITEM_FOUND, request.getProduct_name()), HttpStatus.BAD_REQUEST);
+            }
+
+            if(!userHasTheProduct(request)) {
+                return new ResponseEntity<>(this.cartResponse(ResponseConstants.USER_DOESNT_HAVE_THE_PRODUCT, request.getProduct_name()), HttpStatus.BAD_REQUEST);
+            }
+
+            List<Cart> foundCartProduct = this.cartRepo.findByNameAndUserId(request.getProduct_name(), request.getId());
+
+            if(foundCartProduct.isEmpty()) {
+                return new ResponseEntity<>(this.cartResponse(ResponseConstants.PRODUCT_NOT_FOUND_IN_CART, request.getProduct_name()), HttpStatus.BAD_REQUEST);
+            }
+
+            Optional<Cart> desiredProductToDelete = foundCartProduct.stream().filter((item)-> item.getName().equals(request.getProduct_name())).findFirst();
+
+            if(desiredProductToDelete.isPresent()) {
+               Cart product = desiredProductToDelete.get();
+
+               this.cartRepo.deleteById(product.getId());
+               return new ResponseEntity<>(this.cartResponse(ResponseConstants.ITEM_HAS_BEEN_DELETED_CART, request.getProduct_name()), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(this.cartResponse("Unexpected error.", request.getProduct_name()), HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<>(this.cartResponse(ResponseConstants.USER_DOESNT_EXIST, request.getUsername()), HttpStatus.BAD_REQUEST);
+    }
+
     private Boolean userExists(CartContentsRequest request) {
         Users foundUserID = this.usersRepo.findByLogin(request.getUsername());
         if(request.getId() != null && foundUserID != null) {
@@ -77,8 +110,9 @@ public class CartService {
         return false;
     }
 
+
     private Boolean userHasTheProduct(AddNewCartItemRequest request) {
-        Integer foundProduct = this.cartRepo.findByNameAndUserId(request.getProduct_name(), request.getId());
+        Integer foundProduct = this.cartRepo.findByNameAndUserId_returnID(request.getProduct_name(), request.getId());
         return foundProduct != null;
     }
 

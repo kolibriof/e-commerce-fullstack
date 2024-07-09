@@ -27,4 +27,9 @@ public class CartController {
         return this.cartService.addCartProductByRequest(request);
     }
 
+    @RequestMapping(value = "removeproduct", method = RequestMethod.POST)
+    public ResponseEntity<String> removeProductFromCart(@RequestBody AddNewCartItemRequest request) {
+        return this.cartService.removeProductByRequest(request);
+    }
+
 }

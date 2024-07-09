@@ -1,17 +1,21 @@
 <section class="home-page-wrapper">
 	<header class="header">
 		<nav class="navbar-wrapper">
+			<div class="greetings">
+				<h4>Welcome, {{ userLogin }}!</h4>
+			</div>
 			<button
 				class="nav-buttons"
 				mat-stroked-button
-				*ngFor="let item of ['HOME', 'PRODUCTS', 'CARD']">
+				*ngFor="let item of navHeaders"
+				(click)="navigate(navLinks[item])">
 				{{ item }}
 			</button>
 			<button
 				mat-raised-button
 				class="update-products-button"
 				(click)="updateProducts()">
-				UPDATE PRODUCTS
+				UPDATE PRODUCTSS
 			</button>
 		</nav>
 	</header>
@@ -20,6 +24,8 @@
 			*ngFor="let item of receivedProducts | async"
 			[name]="item.name"
 			[desc]="item.description"
-			[img]="item.imglink" />
+			[img]="item.imglink"
+			[price]="item.price"
+			[cartItems]="cartItems" />
 	</div>
 </section>

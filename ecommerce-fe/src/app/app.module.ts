@@ -14,11 +14,13 @@ import { HomePageComponent } from "./home-page/home-page.component";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "./guards/AuthGuard";
 import { provideAnimations } from "@angular/platform-browser/animations";
+import { MatIconModule } from "@angular/material/icon";
 import {
 	HttpClient,
 	HttpClientModule,
 	provideHttpClient,
 } from "@angular/common/http";
+import { ToastrModule } from "ngx-toastr";
 import { ProductComponent } from "./product/product.component";
 
 const routes: Routes = [
@@ -34,6 +36,11 @@ const routes: Routes = [
 	{
 		path: "home",
 		component: HomePageComponent,
+		canActivate: [AuthGuard],
+	},
+	{
+		path: "cart",
+		component: CartComponent,
 		canActivate: [AuthGuard],
 	},
 	{
@@ -62,6 +69,8 @@ const routes: Routes = [
 		MatInputModule,
 		MatCardModule,
 		HttpClientModule,
+		MatIconModule,
+		ToastrModule.forRoot(),
 	],
 	providers: [AuthGuard, provideAnimations()],
 	bootstrap: [AppComponent],

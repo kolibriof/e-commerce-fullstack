@@ -1,1 +1,21 @@
-<p>cart works!</p>
+<section class="cart-wrapper">
+	<div class="cart-items-header">YOUR CART ITEMS</div>
+
+	<div class="cart-items">
+		<h2 *ngIf="errorMessage">{{ errorMessage }}</h2>
+
+		<mat-card class="cart-single-item" *ngFor="let item of cartItems | async">
+			<div class="cart-single-item-name">{{ item.name }}</div>
+			<div class="cart-single-item-price">{{ item.price + "$" }}</div>
+		</mat-card>
+	</div>
+
+	<div class="nav-footer-buttons">
+		<button mat-flat-button class="back-footer-button" (click)="back()">
+			BACK
+		</button>
+		<button mat-flat-button class="proceed-footer-button" (click)="proceed()">
+			PROCEED
+		</button>
+	</div>
+</section>
