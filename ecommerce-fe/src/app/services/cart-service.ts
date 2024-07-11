@@ -4,8 +4,7 @@ import {
 	CartItemsContents,
 	SingleCartItem,
 } from "../helpers/constants";
-import { HttpClient } from "@angular/common/http";
-import { take } from "rxjs";
+import { HttpClient, HttpParams } from "@angular/common/http";
 
 @Injectable({ providedIn: "root" })
 export class CartService {
@@ -30,7 +29,8 @@ export class CartService {
 	}
 
 	deleteItemFromCart(cart: AddCartItem) {
-		return this.http.post(this.url + "/removeproduct", cart, {
+		return this.http.post(this.url + "/cartproduct", cart, {
+			params: new HttpParams().set("remove", true),
 			headers: {
 				"Content-Type": "application/json",
 			},
