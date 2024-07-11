@@ -5,6 +5,7 @@ import {
 	SingleCartItem,
 } from "../helpers/constants";
 import { HttpClient } from "@angular/common/http";
+import { take } from "rxjs";
 
 @Injectable({ providedIn: "root" })
 export class CartService {

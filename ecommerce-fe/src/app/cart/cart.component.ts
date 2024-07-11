@@ -1,8 +1,13 @@
 import { Component, OnInit } from "@angular/core";
 import { CartService } from "../services/cart-service";
-import { CartItemsContents, SingleCartItem } from "../helpers/constants";
+import {
+	AddCartItem,
+	CartItemsContents,
+	SingleCartItem,
+} from "../helpers/constants";
 import { Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, catchError, of, take } from "rxjs";
+import { ToastrService } from "ngx-toastr";
 
 @Component({
 	selector: "app-cart",
@@ -12,7 +17,11 @@ import { BehaviorSubject } from "rxjs";
 export class CartComponent implements OnInit {
 	protected cartItems = new BehaviorSubject<SingleCartItem[]>([]);
 	protected errorMessage = "";
-	constructor(private cartService: CartService, private router: Router) {}
+	constructor(
+		private cartService: CartService,
+		private router: Router,
+		private toastr: ToastrService,
+	) {}
 	ngOnInit(): void {
 		let cartCreds: CartItemsContents;
 		if (localStorage.getItem("ecommerce-loggedin-user")) {
@@ -38,6 +47,47 @@ export class CartComponent implements OnInit {
 
 	back() {
 		this.router.navigate(["/home"]);
+	}
+
+	removeFromCart(item: SingleCartItem) {
+		if (localStorage.getItem("ecommerce-loggedin-user")) {
+			const itemToAdd: AddCartItem = {
+				id: item.person.id,
+				username: item.person.login,
+				product_name: item.name,
+			};
+
+			this.cartService
+				.deleteItemFromCart(itemToAdd)
+				.pipe(
+					catchError((err) => {
+						this.toastr.error(err.error.message);
+						return of();
+					}),
+				)
+				.subscribe((data: any) => {
+					this.toastr.info(data.message, data.cause);
+
+					this.cartService
+						.getCartItems({
+							id: item.person.id,
+							username: item.person.login,
+						})
+						.pipe(take(1))
+						.subscribe((data: any) => {
+							localStorage.setItem(
+								"ecommerce-cart-items",
+								JSON.stringify(data),
+							);
+							if (data.message) {
+								this.cartItems.next([]);
+								this.errorMessage = data.message;
+							} else {
+								this.cartItems.next(data);
+							}
+						});
+				});
+		}
 	}
 
 	proceed() {}

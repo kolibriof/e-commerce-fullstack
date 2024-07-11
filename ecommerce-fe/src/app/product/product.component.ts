@@ -52,9 +52,8 @@ export class ProductComponent implements OnInit {
 			if (!this.inCart) {
 				this.cartService.addItemToCart(itemToAdd).subscribe((data: any) => {
 					this.inCart = true;
-
+					this.loadLatestItems(userFromLS.id, userFromLS.login);
 					this.toastr.success(data.message, data.cause);
-					this.loadLatestCartItems(userFromLS.id, userFromLS.login);
 				});
 				return;
 			}
@@ -70,16 +69,19 @@ export class ProductComponent implements OnInit {
 					this.inCart = false;
 
 					this.toastr.info(data.message, data.cause);
-					this.loadLatestCartItems(userFromLS.id, userFromLS.login);
+					this.loadLatestItems(userFromLS.id, userFromLS.login);
 				});
 		} else {
 			this.router.navigate(["/login"]);
 		}
 	}
 
-	private loadLatestCartItems(id: any, login: any) {
+	private loadLatestItems(id: any, login: any) {
 		this.cartService
-			.getCartItems({ id: id, username: login })
+			.getCartItems({
+				id: id,
+				username: login,
+			})
 			.pipe(take(1))
 			.subscribe((data) => {
 				console.log(data);

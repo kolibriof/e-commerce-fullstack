@@ -7,6 +7,9 @@
 		<mat-card class="cart-single-item" *ngFor="let item of cartItems | async">
 			<div class="cart-single-item-name">{{ item.name }}</div>
 			<div class="cart-single-item-price">{{ item.price + "$" }}</div>
+			<button mat-icon-button (click)="removeFromCart(item)">
+				<mat-icon fontIcon="close" class="remove-button"></mat-icon>
+			</button>
 		</mat-card>
 	</div>
 

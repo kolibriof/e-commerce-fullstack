@@ -89,4 +89,9 @@ export class HomePageComponent implements OnInit {
 			this.router.navigate(["/" + path]);
 		}
 	}
+
+	logout() {
+		localStorage.removeItem("ecommerce-loggedin-user");
+		this.router.navigate(["/login"]);
+	}
 }
