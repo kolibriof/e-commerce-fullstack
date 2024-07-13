@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserController {
@@ -18,7 +19,10 @@ public class UserController {
     }
 
     @RequestMapping(value="/users", method = RequestMethod.POST)
-    public ResponseEntity<String> createUser(@RequestBody Users users) {
+    public ResponseEntity<String> createUser(@RequestBody Users users, @RequestParam(required = false, defaultValue = "false") Boolean balance) {
+        if(balance) {
+            return this.loginService.getUserBalance(users);
+        }
         return loginService.createNewUser(users);
     }
 

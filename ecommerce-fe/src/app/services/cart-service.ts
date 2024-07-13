@@ -36,4 +36,21 @@ export class CartService {
 			},
 		});
 	}
+
+	payForItems(creds: CartItemsContents, sum: number) {
+		return this.http.post(this.url + "/cart", creds, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+			params: new HttpParams().set("sum", sum),
+		});
+	}
+
+	getOwnedProducts(creds: CartItemsContents) {
+		return this.http.post(this.url + "/owned", creds, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }

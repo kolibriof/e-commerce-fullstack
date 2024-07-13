@@ -3,6 +3,7 @@
 		<nav class="navbar-wrapper">
 			<div class="greetings">
 				<h4>Welcome, {{ userLogin }}!</h4>
+				<h6>Balance: {{ balance | async }}$</h6>
 			</div>
 			<button
 				class="nav-buttons"
@@ -15,7 +16,7 @@
 				mat-raised-button
 				class="update-products-button"
 				(click)="updateProducts()">
-				UPDATE PRODUCTSS
+				UPDATE PRODUCTS
 			</button>
 			<button
 				mat-raised-button

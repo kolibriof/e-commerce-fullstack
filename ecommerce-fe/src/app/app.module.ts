@@ -22,6 +22,7 @@ import {
 } from "@angular/common/http";
 import { ToastrModule } from "ngx-toastr";
 import { ProductComponent } from "./product/product.component";
+import { LibraryComponent } from "./library/library.component";
 
 const routes: Routes = [
 	{
@@ -44,6 +45,16 @@ const routes: Routes = [
 		canActivate: [AuthGuard],
 	},
 	{
+		path: "payment",
+		component: PaymentComponent,
+		canActivate: [AuthGuard],
+	},
+	{
+		path: "library",
+		component: LibraryComponent,
+		canActivate: [AuthGuard],
+	},
+	{
 		path: "**",
 		redirectTo: "login",
 	},
@@ -57,6 +68,7 @@ const routes: Routes = [
 		PaymentComponent,
 		HomePageComponent,
 		ProductComponent,
+  LibraryComponent,
 	],
 	imports: [
 		MatButtonModule,

@@ -25,6 +25,7 @@ export class LoginPageComponent {
 				lcUserObj = {
 					id: data,
 					login: form.form.value.login,
+					balance: 0,
 				};
 				localStorage.setItem(
 					"ecommerce-loggedin-user",

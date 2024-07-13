@@ -16,6 +16,7 @@ export class ProductComponent implements OnInit {
 	@Input("img") img: string = "";
 	@Input("cartItems") cartItems: Observable<SingleCartItem[]> = of([]);
 	@Input("price") price: number = 0;
+	@Input("owned") owned: boolean = false;
 	protected inCart: boolean = true;
 
 	constructor(

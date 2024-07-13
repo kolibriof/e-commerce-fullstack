@@ -15,7 +15,10 @@ public class CartController {
     }
 
     @RequestMapping(value = "cart", method = RequestMethod.POST)
-    public ResponseEntity<String> getCartProducts(@RequestBody CartContentsRequest request) {
+    public ResponseEntity<String> getCartProducts(@RequestBody CartContentsRequest request, @RequestParam(required = false, defaultValue = "") Float sum) {
+        if(sum != null) {
+            return this.cartService.payForTheCartProducts(request, sum);
+        }
         return this.cartService.verifyCartContentsByRequest(request);
     }
 

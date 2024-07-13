@@ -2,9 +2,11 @@ package com.ecommerce.ecommerce_be.services;
 
 import com.ecommerce.ecommerce_be.builders.ResponseBuilder;
 import com.ecommerce.ecommerce_be.entities.Cart;
+import com.ecommerce.ecommerce_be.entities.OwnedProducts;
 import com.ecommerce.ecommerce_be.entities.Product;
 import com.ecommerce.ecommerce_be.entities.Users;
 import com.ecommerce.ecommerce_be.repos.CartRepo;
+import com.ecommerce.ecommerce_be.repos.OwnedProductsRepo;
 import com.ecommerce.ecommerce_be.repos.ProductsRepo;
 import com.ecommerce.ecommerce_be.repos.UsersRepo;
 import com.ecommerce.ecommerce_be.requests.AddNewCartItemRequest;
@@ -25,8 +27,10 @@ public class CartService {
     CartRepo cartRepo;
     UsersRepo usersRepo;
     ProductsRepo productsRepo;
+    OwnedProductsRepo ownedProductsRepo;
 
-    public CartService(CartRepo cartRepo, UsersRepo usersRepo, ProductsRepo productsRepo) {
+    public CartService(CartRepo cartRepo, UsersRepo usersRepo, ProductsRepo productsRepo, OwnedProductsRepo ownedProductsRepo) {
+        this.ownedProductsRepo = ownedProductsRepo;
         this.cartRepo = cartRepo;
         this.usersRepo = usersRepo;
         this.productsRepo = productsRepo;
@@ -100,6 +104,63 @@ public class CartService {
             }
         }
         return new ResponseEntity<>(this.cartResponse(ResponseConstants.USER_DOESNT_EXIST, request.getUsername()), HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<String> payForTheCartProducts(CartContentsRequest request, Float sum) {
+        float newUserBalance;
+
+        if(!userExists(request)) {
+            return new ResponseEntity<>(this.cartResponse(ResponseConstants.USER_DOESNT_EXIST, request.getUsername()), HttpStatus.BAD_REQUEST);
+        }
+
+        Float userBalance = this.usersRepo.getUserBalance(request.getUsername());
+
+
+        if(!(userBalance >= sum)) {
+          return new ResponseEntity<>(this.cartResponse("Not enough money.", userBalance.toString()), HttpStatus.BAD_REQUEST);
+        }
+
+
+        newUserBalance = userBalance - sum;
+
+        List<Cart> userProducts = this.cartRepo.findByUserID(request.getId());
+        Users productOwner = this.usersRepo.findByLogin(request.getUsername());
+
+
+        for(Cart product : userProducts) {
+            Product foundProduct = this.productsRepo.findByName(product.getName());
+            OwnedProducts ownedProducts = new OwnedProducts();
+
+            if(this.userOwnThisProduct(product) != null) {
+                return new ResponseEntity<>(this.cartResponse("You already own this product", product.getName()), HttpStatus.BAD_REQUEST);
+            }
+
+            if(foundProduct != null) {
+                ownedProducts.setProduct(foundProduct);
+                ownedProducts.setUsers(productOwner);
+                this.ownedProductsRepo.save(ownedProducts);
+            } else {
+                System.out.println("The product cannot be found.");
+            }
+        }
+
+        this.clearCartByRequest(userProducts);
+
+        this.usersRepo.updateUserBalance(newUserBalance, productOwner.getId());
+
+        return new ResponseEntity<>(this.cartResponse("The operation was successful.", productOwner.getLogin()), HttpStatus.OK);
+    }
+
+
+    private void clearCartByRequest(List<Cart> cartList) {
+        for(Cart item : cartList) {
+            this.cartRepo.deleteById(item.getId());
+        }
+    }
+
+    private Product userOwnThisProduct(Cart cartItem) {
+        Product foundProduct = this.productsRepo.findByName(cartItem.getName());
+        return this.ownedProductsRepo.findOwnedUserProduct(cartItem.getPerson().getId(), foundProduct.getId());
     }
 
     private Boolean userExists(CartContentsRequest request) {

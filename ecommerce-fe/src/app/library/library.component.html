@@ -1,0 +1,28 @@
+<section class="main-wrapper">
+	<mat-card class="owned-block-wrapper">
+		<mat-card-header class="owned-items-header">
+			<mat-card-title
+				>Owned products for {{ loggedInUser.username }}</mat-card-title
+			>
+		</mat-card-header>
+		<mat-card-content
+			class="owned-items-wrapper"
+			*ngIf="!errorMessage; else message">
+			<app-product
+				*ngFor="let product of ownedProducts | async"
+				[owned]="true"
+				[img]="product.product.imglink"
+				[desc]="product.product.description"
+				[name]="product.product.name" />
+		</mat-card-content>
+		<ng-template #message>
+			<h3 class="error-message-wrapper">{{ errorMessage }}</h3>
+		</ng-template>
+		<mat-card-content class="summary">
+			<p>Collection cost: {{ collectionCost | async }}$</p>
+		</mat-card-content>
+		<mat-card-footer class="owned-items-footer">
+			<button mat-stroked-button routerLink="/home">BACK HOME</button>
+		</mat-card-footer>
+	</mat-card>
+</section>

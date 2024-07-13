@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 
@@ -19,6 +19,15 @@ export class LoginService {
 			headers: {
 				"Content-Type": "application/json",
 			},
+		});
+	}
+
+	getUserBalance(creds: any) {
+		return this.http.post(this.url + "/users", creds, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+			params: new HttpParams().set("balance", true),
 		});
 	}
 

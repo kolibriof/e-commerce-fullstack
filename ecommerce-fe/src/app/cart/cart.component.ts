@@ -6,7 +6,7 @@ import {
 	SingleCartItem,
 } from "../helpers/constants";
 import { Router } from "@angular/router";
-import { BehaviorSubject, catchError, of, take } from "rxjs";
+import { BehaviorSubject, catchError, of, take, tap } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
 @Component({
@@ -90,5 +90,11 @@ export class CartComponent implements OnInit {
 		}
 	}
 
-	proceed() {}
+	proceed() {
+		if (this.errorMessage) {
+			this.toastr.error("Add something to your cart first.");
+			return;
+		}
+		this.router.navigate(["/payment"]);
+	}
 }

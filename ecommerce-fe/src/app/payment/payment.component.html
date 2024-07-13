@@ -1,1 +1,26 @@
-<p>payment works!</p>
+<section class="payment-wrapper">
+	<mat-card class="payment-window">
+		<mat-card-header class="payment-header">
+			<mat-card-title> Your Products </mat-card-title>
+			<div class="balance-wrapper">
+				<p class="balance-payment">Balance:</p>
+				<p class="balance-payment">{{ userBalance | async }}$</p>
+			</div>
+		</mat-card-header>
+		<mat-card-content class="payment-items">
+			<div *ngFor="let item of cartItems" class="single-payment-item-wrapper">
+				<mat-card-content class="single-payment-item-contents">
+					<h4>{{ item.name }}</h4>
+					<h5>{{ item.price }}$</h5>
+				</mat-card-content>
+			</div>
+		</mat-card-content>
+		<mat-card-content class="summary-items">
+			<p>Payment summary: {{ summary }}$</p>
+		</mat-card-content>
+		<mat-card-footer class="payment-footer-button">
+			<button mat-stroked-button (click)="back()">GO BACK</button>
+			<button mat-stroked-button (click)="pay()">PAY</button>
+		</mat-card-footer>
+	</mat-card>
+</section>

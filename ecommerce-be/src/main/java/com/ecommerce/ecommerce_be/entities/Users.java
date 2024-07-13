@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "users", schema = "ecommerce")
 public class Users {
+
     @Id()
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_seq")
     @SequenceGenerator(name = "id_seq", allocationSize = 1)
@@ -14,7 +15,11 @@ public class Users {
     @NotBlank
     private String login;
 
-    @NotBlank String password;
+    @NotBlank
+    private String password;
+
+    @NotBlank
+    private Float balance;
 
     private Users(){}
 
@@ -30,12 +35,17 @@ public class Users {
         return login;
     }
 
+    public @NotBlank Float getBalance() {
+        return balance;
+    }
+
     public @NotBlank String getPassword() {
         return password;
     }
 
-    public Users(Integer id, String login, String password) {
+    public Users(Integer id, String login, String password, Float balance) {
         this.Id = id;
+        this.balance = balance;
         this.login = login;
         this.password = password;
     }

@@ -1,16 +1,27 @@
-<mat-card class="single-product-wrapper">
+<mat-card
+	[className]="
+		owned ? 'single-owned-product-wrapper' : 'single-product-wrapper'
+	">
 	<mat-card-content class="product-img">
-		<img mat-card-image [src]="img" [alt]="name" width="150px" />
+		<img
+			mat-card-image
+			[src]="img"
+			[alt]="name"
+			[attr.width]="owned ? '50px' : '150px'" />
 	</mat-card-content>
 
 	<mat-card-content class="product-details">
 		<h4>{{ name }}</h4>
-		<p>{{ desc }}</p>
+		<p *ngIf="!owned">{{ desc }}</p>
 	</mat-card-content>
-	<button mat-icon-button class="add-button" (click)="addItemToCart(name)">
+	<button
+		mat-icon-button
+		class="add-button"
+		(click)="addItemToCart(name)"
+		*ngIf="!owned">
 		<mat-icon
 			[fontIcon]="inCart ? 'remove_shopping_cart' : 'add_shopping_cart'"
 			class="add-icon"></mat-icon>
 	</button>
-	<span class="price-tag">{{ price + " $" }}</span>
+	<span class="price-tag" *ngIf="!owned">{{ price + " $" }}</span>
 </mat-card>

@@ -10,6 +10,7 @@ export const LinksConst = {
 	HOME: "HOME",
 	PRODUCTS: "PRODUCTS",
 	CART: "CART",
+	LIBRARY: "LIBRARY",
 };
 
 export interface CartItemsContents {

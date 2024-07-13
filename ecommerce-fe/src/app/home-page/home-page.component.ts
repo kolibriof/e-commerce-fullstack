@@ -1,14 +1,15 @@
 import { Component, OnInit } from "@angular/core";
 import { ProductService } from "../services/product-service";
-import { BehaviorSubject, take } from "rxjs";
+import { BehaviorSubject, take, tap } from "rxjs";
 import { LinksConst, Product, SingleCartItem } from "../helpers/constants";
 import { Router } from "@angular/router";
 import { CartService } from "../services/cart-service";
+import { LoginService } from "../services/login-service";
 
 const NavLinks = {
 	[LinksConst.HOME]: "home",
 	[LinksConst.CART]: "cart",
-	[LinksConst.PRODUCTS]: "products",
+	[LinksConst.LIBRARY]: "library",
 };
 
 @Component({
@@ -19,12 +20,14 @@ const NavLinks = {
 export class HomePageComponent implements OnInit {
 	protected navHeaders = Object.keys(NavLinks);
 	protected userLogin: string = "";
+	protected balance = new BehaviorSubject<String>("");
 	protected navLinks = NavLinks;
 	protected cartItems = new BehaviorSubject<SingleCartItem[]>([]);
 	protected receivedProducts = new BehaviorSubject<Product[]>([]);
 
 	constructor(
 		private productService: ProductService,
+		private loginService: LoginService,
 		private router: Router,
 		private cartService: CartService,
 	) {}
@@ -35,6 +38,14 @@ export class HomePageComponent implements OnInit {
 				localStorage.getItem("ecommerce-loggedin-user") || "",
 			);
 			this.userLogin = user.login;
+
+			this.loginService
+				.getUserBalance({ id: user.id, login: user.login })
+				.pipe(take(1))
+				.subscribe((data: any) => {
+					this.balance.next(data);
+				});
+
 			if (localStorage.getItem("ecommerce-cart-items")) {
 				const itemsForUser = JSON.parse(
 					localStorage.getItem("ecommerce-cart-items") || "{}",
