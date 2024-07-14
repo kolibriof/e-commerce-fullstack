@@ -15,6 +15,9 @@ public interface OwnedProductsRepo extends JpaRepository<OwnedProducts, Integer>
     @Query("SELECT o.product FROM OwnedProducts o WHERE o.users.id = :userid AND o.product.id = :productid")
     Product findOwnedUserProduct(@Param("userid") Integer userid, @Param("productid") Integer productid);
 
-    @Query("SELECT o FROM OwnedProducts o INNER JOIN Product p ON p.id = o.users.id WHERE o.users.id = :id")
+    @Query("SELECT o FROM OwnedProducts o INNER JOIN Product p ON p.id = o.product.id WHERE o.users.id = :id")
     List<OwnedProducts> findOwnedProductsByUserID(@Param("id") Integer id);
+
+    @Query("SELECT o FROM OwnedProducts o INNER JOIN Product p ON p.id = o.product.id WHERE o.product.id = :productid AND o.users.id = :userid")
+    OwnedProducts findSingleProductByUserAndProductID(@Param("productid") Integer productid, @Param("userid") Integer userid);
 }

@@ -22,12 +22,17 @@ export class LibraryComponent implements OnInit {
 		const userFromLs = JSON.parse(
 			localStorage.getItem("ecommerce-loggedin-user") || "",
 		);
+
 		if (userFromLs) {
 			this.loggedInUser = { id: userFromLs.id, username: userFromLs.login };
 		} else {
 			this.router.navigate(["/login"]);
 		}
 
+		this.updateOwnedProducts();
+	}
+
+	updateOwnedProducts() {
 		this.cartService
 			.getOwnedProducts(this.loggedInUser)
 			.pipe(
@@ -42,9 +47,16 @@ export class LibraryComponent implements OnInit {
 					acc += value.product.price;
 					return acc;
 				}, 0);
+				console.log(data);
 
 				this.collectionCost.next(collectionSum.toFixed(2));
 				this.ownedProducts.next(data);
 			});
+	}
+
+	itemIsSold(confirmation: boolean) {
+		if (confirmation) {
+			this.updateOwnedProducts();
+		}
 	}
 }

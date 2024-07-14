@@ -1,8 +1,11 @@
 <div class="entry">
 	@if (isLogin) {
-	<mat-card appearance="outlined">
+	<mat-card appearance="outlined" class="form-wrapper">
 		<mat-card-content>
-			<form #loginForm="ngForm" (submit)="submitForm(loginForm)">
+			<form
+				#loginForm="ngForm"
+				(submit)="submitForm(loginForm)"
+				class="form-fields-wrapper">
 				<mat-form-field>
 					<mat-label>Login: </mat-label>
 					<input
@@ -40,9 +43,12 @@
 		</mat-card-content>
 	</mat-card>
 	} @else {
-	<mat-card appearance="outlined">
+	<mat-card appearance="outlined" class="form-wrapper">
 		<mat-card-content>
-			<form #signupForm="ngForm" (submit)="submitForm(signupForm)">
+			<form
+				#signupForm="ngForm"
+				(submit)="submitForm(signupForm)"
+				class="form-fields-wrapper">
 				<mat-form-field>
 					<mat-label>Login: </mat-label>
 					<input

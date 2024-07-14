@@ -11,9 +11,12 @@
 			<app-product
 				*ngFor="let product of ownedProducts | async"
 				[owned]="true"
+				[id]="product.product.id"
 				[img]="product.product.imglink"
 				[desc]="product.product.description"
-				[name]="product.product.name" />
+				[name]="product.product.name"
+				[price]="product.product.price"
+				(sold)="itemIsSold($event)" />
 		</mat-card-content>
 		<ng-template #message>
 			<h3 class="error-message-wrapper">{{ errorMessage }}</h3>

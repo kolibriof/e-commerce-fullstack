@@ -1,0 +1,21 @@
+.entry {
+	width: 100%;
+	height: 100dvh;
+}
+
+.form-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 100%;
+}
+
+.form-fields-wrapper {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}

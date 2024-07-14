@@ -1,8 +1,15 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { CartService } from "../services/cart-service";
 import { AddCartItem, SingleCartItem } from "../helpers/constants";
 import { ToastrService } from "ngx-toastr";
-import { BehaviorSubject, Observable, catchError, of, take } from "rxjs";
+import {
+	BehaviorSubject,
+	Observable,
+	Subject,
+	catchError,
+	of,
+	take,
+} from "rxjs";
 import { Router } from "@angular/router";
 
 @Component({
@@ -11,12 +18,14 @@ import { Router } from "@angular/router";
 	styleUrl: "./product.component.css",
 })
 export class ProductComponent implements OnInit {
+	@Input("id") id!: number;
 	@Input("name") name: string = "";
 	@Input("desc") desc: string = "";
 	@Input("img") img: string = "";
 	@Input("cartItems") cartItems: Observable<SingleCartItem[]> = of([]);
 	@Input("price") price: number = 0;
 	@Input("owned") owned: boolean = false;
+	@Output("sold") sold = new EventEmitter<boolean>();
 	protected inCart: boolean = true;
 
 	constructor(
@@ -88,5 +97,30 @@ export class ProductComponent implements OnInit {
 				console.log(data);
 				localStorage.setItem("ecommerce-cart-items", JSON.stringify(data));
 			});
+	}
+	sellProductById(id: number) {
+		const userFromLS = JSON.parse(
+			localStorage.getItem("ecommerce-loggedin-user") || "",
+		);
+		if (userFromLS) {
+			this.cartService
+				.sellOwnedProduct(id, userFromLS.id, {
+					id: userFromLS.id,
+					username: userFromLS.login,
+				})
+				.pipe(
+					take(1),
+					catchError((data) => {
+						this.toastr.error(data.error.cause, data.error.message);
+						return of();
+					}),
+				)
+				.subscribe((data: any) => {
+					this.sold.emit(true);
+					this.toastr.success(data.cause, data.message);
+				});
+		} else {
+			this.router.navigate(["/login"]);
+		}
 	}
 }

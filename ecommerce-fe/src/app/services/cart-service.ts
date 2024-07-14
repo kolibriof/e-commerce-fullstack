@@ -53,4 +53,19 @@ export class CartService {
 			},
 		});
 	}
+
+	sellOwnedProduct(
+		productId: number,
+		userId: number,
+		creds: CartItemsContents,
+	) {
+		return this.http.post(this.url + "/owned", creds, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+			params: new HttpParams()
+				.set("productId", productId)
+				.set("userId", userId),
+		});
+	}
 }
