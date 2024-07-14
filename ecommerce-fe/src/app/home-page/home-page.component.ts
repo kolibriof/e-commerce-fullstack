@@ -43,7 +43,7 @@ export class HomePageComponent implements OnInit {
 				.getUserBalance({ id: user.id, login: user.login })
 				.pipe(take(1))
 				.subscribe((data: any) => {
-					this.balance.next(data);
+					this.balance.next((data as number).toFixed(2));
 				});
 
 			if (localStorage.getItem("ecommerce-cart-items")) {
