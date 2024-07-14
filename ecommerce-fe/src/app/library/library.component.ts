@@ -38,6 +38,7 @@ export class LibraryComponent implements OnInit {
 			.pipe(
 				take(1),
 				catchError((data) => {
+					this.collectionCost.next("0");
 					this.errorMessage = data.error.message;
 					return of();
 				}),
