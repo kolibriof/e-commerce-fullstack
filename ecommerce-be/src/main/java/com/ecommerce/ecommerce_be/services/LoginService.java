@@ -6,6 +6,7 @@ import com.ecommerce.ecommerce_be.entities.Users;
 import com.ecommerce.ecommerce_be.repos.UsersRepo;
 import com.ecommerce.ecommerce_be.responses.ResultResponse;
 import com.ecommerce.ecommerce_be.responses.UsersResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import static com.ecommerce.ecommerce_be.builders.ResponseBuilder.buildResponse;
 @Service
 public class LoginService {
 
+
     UsersRepo usersRepo;
 
     public LoginService(UsersRepo usersRepo) {
@@ -23,16 +25,19 @@ public class LoginService {
     }
 
     @Transactional
-    public ResponseEntity<String> authenticateUser(String login, String password) {
-        Integer foundUser = this.usersRepo.findByLoginAndPassword(login, password);
+    public ResponseEntity<String> authenticateUser(Users users, HttpServletRequest request) {
+        Integer foundUser = this.usersRepo.findByLoginAndPassword(users.getLogin(), users.getPassword());
+
         if(foundUser == null) {
             return new ResponseEntity<>("Authentication has failed.", HttpStatus.BAD_REQUEST);
         }
+
+
         return new ResponseEntity<>(foundUser.toString(), HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<String> createNewUser(Users users) {
+    public ResponseEntity<String> createNewUser(Users users, HttpServletRequest request) {
         Users foundUser = this.usersRepo.findByLogin(users.getLogin());
 
         if(foundUser != null) {
@@ -40,6 +45,7 @@ public class LoginService {
                     buildResponse(new UsersResponse("The user already exists", users.getLogin())),
                     HttpStatus.BAD_REQUEST);
         }
+
 
         this.usersRepo.save(users);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -62,4 +68,5 @@ public class LoginService {
         return new ResponseEntity<>(ResponseBuilder.buildResponse(balance), HttpStatus.OK);
 
     }
+
 }

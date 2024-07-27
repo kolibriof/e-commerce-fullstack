@@ -9,7 +9,7 @@ import { LoginService } from "../services/login-service";
 const NavLinks = {
 	[LinksConst.HOME]: "home",
 	[LinksConst.CART]: "cart",
-	[LinksConst.LIBRARY]: "library",
+	[LinksConst.COLLECTION]: "collection",
 };
 
 @Component({

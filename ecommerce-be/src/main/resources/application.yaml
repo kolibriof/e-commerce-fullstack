@@ -1,4 +1,11 @@
 spring:
+  security:
+    filter:
+      order: 1
+    user:
+      password: 12345
+    admin:
+      password: admin
   application:
     name: ecommerce-be
   datasource:
@@ -9,9 +16,16 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  session:
+    store-type: jdbc
+    timeout: 30m
+    jdbc:
+      table-name: SPRING_SESSION
+      initialize-schema: always
 
 logging:
   level:
+    org.hibernate.engine.transaction.internal.TransactionImpl: INFO
     org:
       hibernate: debug
     web: DEBUG

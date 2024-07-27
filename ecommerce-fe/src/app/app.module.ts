@@ -15,14 +15,11 @@ import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "./guards/AuthGuard";
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { MatIconModule } from "@angular/material/icon";
-import {
-	HttpClient,
-	HttpClientModule,
-	provideHttpClient,
-} from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { ToastrModule } from "ngx-toastr";
 import { ProductComponent } from "./product/product.component";
 import { LibraryComponent } from "./library/library.component";
+import { AuthInterceptor } from "./interceptors/auth-interceptor";
 
 const routes: Routes = [
 	{
@@ -50,7 +47,7 @@ const routes: Routes = [
 		canActivate: [AuthGuard],
 	},
 	{
-		path: "library",
+		path: "collection",
 		component: LibraryComponent,
 		canActivate: [AuthGuard],
 	},
@@ -68,7 +65,7 @@ const routes: Routes = [
 		PaymentComponent,
 		HomePageComponent,
 		ProductComponent,
-  LibraryComponent,
+		LibraryComponent,
 	],
 	imports: [
 		MatButtonModule,
@@ -84,7 +81,11 @@ const routes: Routes = [
 		MatIconModule,
 		ToastrModule.forRoot(),
 	],
-	providers: [AuthGuard, provideAnimations()],
+	providers: [
+		AuthGuard,
+		provideAnimations(),
+		{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+	],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}
