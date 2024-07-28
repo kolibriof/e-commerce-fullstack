@@ -18,7 +18,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   session:
     store-type: jdbc
-    timeout: 30m
+    timeout: 1m
     jdbc:
       table-name: SPRING_SESSION
       initialize-schema: always
