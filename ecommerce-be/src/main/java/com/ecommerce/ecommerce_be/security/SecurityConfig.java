@@ -9,24 +9,28 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.session.SimpleRedirectSessionInformationExpiredStrategy;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    UserAuthProvider userAuthProvider;
+
+    public SecurityConfig(UserAuthProvider userAuthProvider) {
+        this.userAuthProvider = userAuthProvider;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new SessionFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new SessionFilter(userAuthProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/login").permitAll()
-                        .anyRequest().authenticated()
+                                                             .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(1)
-                        .expiredSessionStrategy(new SimpleRedirectSessionInformationExpiredStrategy("/login"))
+                        .expiredSessionStrategy(new CustomSessionInformationExpiredStrategy())
                 );
 
         return http.build();

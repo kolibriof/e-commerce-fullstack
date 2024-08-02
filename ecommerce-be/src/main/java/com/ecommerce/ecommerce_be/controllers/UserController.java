@@ -3,6 +3,8 @@ package com.ecommerce.ecommerce_be.controllers;
 import com.ecommerce.ecommerce_be.entities.Users;
 import com.ecommerce.ecommerce_be.services.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +22,9 @@ public class UserController {
         this.loginService = loginService;
     }
 
-    @RequestMapping(value="/users", method = RequestMethod.POST)
+    @RequestMapping(value = "/users", method = RequestMethod.POST)
     public ResponseEntity<String> createUser(@RequestBody Users users, @RequestParam(required = false, defaultValue = "false") Boolean balance, HttpServletRequest request) {
-        if(balance) {
+        if (balance) {
             return this.loginService.getUserBalance(users);
         }
 
@@ -33,4 +35,15 @@ public class UserController {
     public ResponseEntity<String> loginUser(@RequestBody Users users, HttpServletRequest request) {
         return loginService.authenticateUser(users, request);
     }
+
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ResponseEntity<String> logoutUser(@RequestParam Boolean logout, HttpSession session) {
+        if (logout) {
+            return loginService.logoutUser(session);
+        }
+        return new ResponseEntity<>("Something went wrong", HttpStatus.BAD_REQUEST);
+    }
 }
+
+

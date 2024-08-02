@@ -21,9 +21,9 @@ export class LoginPageComponent {
 	submitForm(form: NgForm) {
 		let lcUserObj;
 		if (form.form.value.passwordRepeat) {
-			this.loginService.createUser(form).subscribe((data) => {
+			this.loginService.createUser(form).subscribe((data: any) => {
 				lcUserObj = {
-					id: data,
+					id: data.message,
 					login: form.form.value.login,
 					balance: 0,
 				};
@@ -31,11 +31,13 @@ export class LoginPageComponent {
 					"ecommerce-loggedin-user",
 					JSON.stringify(lcUserObj),
 				);
+				this.loginService.userToken = data.login;
+				this.router.navigate(["home"]);
 			});
 		} else {
-			this.loginService.loginUser(form).subscribe((data) => {
+			this.loginService.loginUser(form).subscribe((data: any) => {
 				lcUserObj = {
-					id: data,
+					id: data.message,
 					login: form.form.value.login,
 				};
 				localStorage.setItem(
@@ -43,6 +45,7 @@ export class LoginPageComponent {
 					JSON.stringify(lcUserObj),
 				);
 
+				this.loginService.userToken = data.login;
 				this.router.navigate(["home"]);
 			});
 		}

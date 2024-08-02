@@ -102,7 +102,13 @@ export class HomePageComponent implements OnInit {
 	}
 
 	logout() {
-		localStorage.removeItem("ecommerce-loggedin-user");
+		[
+			"ecommerce-products-fe",
+			"ecommerce-user-token",
+			"ecommerce-cart-items",
+			"ecommerce-loggedin-user",
+		].forEach((item) => localStorage.removeItem(item));
+		this.loginService.logout();
 		this.router.navigate(["/login"]);
 	}
 }
