@@ -1,4 +1,5 @@
 Tech Stack: Java, Angular, Spring Boot, PostgreSQL, Spring Data JPA, JWT
+
 Description: A relatively simple project that has a shop-like functionality.
 `Home` - for buying new products.
 `Cart` - continue with the checkout.
