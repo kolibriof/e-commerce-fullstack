@@ -1,34 +1,10 @@
 <section class="home-page-wrapper">
-	<header class="header">
-		<nav class="navbar-wrapper">
-			<div class="greetings">
-				<h4>Welcome, {{ userLogin }}!</h4>
-				<h6>Balance: {{ balance | async }}$</h6>
-			</div>
-			<button
-				class="nav-buttons"
-				mat-stroked-button
-				*ngFor="let item of navHeaders"
-				(click)="navigate(navLinks[item])">
-				{{ item }}
-			</button>
-			<button
-				mat-raised-button
-				class="update-products-button"
-				(click)="updateProducts()">
-				UPDATE PRODUCTS
-			</button>
-			<button
-				mat-raised-button
-				class="update-products-button"
-				(click)="logout()">
-				LOG OUT
-			</button>
-		</nav>
-	</header>
+	<app-header
+		(gotProducts)="receiveProducts($event)"
+		(gotCartItems)="receiveCartItems($event)" />
 	<div class="products">
 		<app-product
-			*ngFor="let item of receivedProducts | async"
+			*ngFor="let item of receivedProducts"
 			[name]="item.name"
 			[desc]="item.description"
 			[img]="item.imglink"

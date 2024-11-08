@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-import { FormsModule } from "@angular/forms";
+import { BrowserModule, DomSanitizer } from "@angular/platform-browser";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatFormField, MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
@@ -20,6 +20,7 @@ import { ToastrModule } from "ngx-toastr";
 import { ProductComponent } from "./product/product.component";
 import { LibraryComponent } from "./library/library.component";
 import { AuthInterceptor } from "./interceptors/auth-interceptor";
+import { HeaderComponent } from './header/header.component';
 
 const routes: Routes = [
 	{
@@ -66,6 +67,7 @@ const routes: Routes = [
 		HomePageComponent,
 		ProductComponent,
 		LibraryComponent,
+  HeaderComponent,
 	],
 	imports: [
 		MatButtonModule,
@@ -79,6 +81,7 @@ const routes: Routes = [
 		MatCardModule,
 		HttpClientModule,
 		MatIconModule,
+		ReactiveFormsModule,
 		ToastrModule.forRoot(),
 	],
 	providers: [

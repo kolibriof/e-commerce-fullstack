@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { FormGroup } from "@angular/forms";
 import { BehaviorSubject, Observable, Subject, take } from "rxjs";
 
 @Injectable({ providedIn: "root" })
@@ -20,8 +21,8 @@ export class LoginService {
 		return this.authorized.asObservable();
 	}
 
-	loginUser(creds: any) {
-		return this.http.post(this.url + "/login", creds.form.value, {
+	loginUser(creds: FormGroup) {
+		return this.http.post(this.url + "/login", creds.getRawValue(), {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -37,8 +38,8 @@ export class LoginService {
 		});
 	}
 
-	createUser(creds: any) {
-		return this.http.post(this.url + "/users", creds.form.value, {
+	createUser(creds: FormGroup) {
+		return this.http.post(this.url + "/users", creds.getRawValue(), {
 			headers: {
 				"Content-Type": "application/json",
 			},

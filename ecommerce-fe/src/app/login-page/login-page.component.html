@@ -1,106 +1,61 @@
 <div class="entry">
-	@if (isLogin) {
 	<mat-card appearance="outlined" class="form-wrapper">
 		<mat-card-content>
 			<form
-				#loginForm="ngForm"
-				(submit)="submitForm(loginForm)"
+				[formGroup]="isLogin ? loginForm : signupForm"
+				(submit)="isLogin ? submitLoginForm() : submitSignupForm()"
 				class="form-fields-wrapper">
 				<mat-form-field>
 					<mat-label>Login: </mat-label>
 					<input
 						matInput
-						placeholder="Login... "
+						placeholder="Login..."
 						required
 						type="text"
-						name="login"
-						ngModel />
+						formControlName="login" />
 				</mat-form-field>
+
 				<mat-form-field>
 					<mat-label>Password: </mat-label>
 					<input
 						matInput
 						type="password"
-						placeholder="Password... "
+						placeholder="Password..."
 						required
-						name="password"
-						ngModel />
+						formControlName="password" />
 				</mat-form-field>
-				<mat-card-actions>
-					<button
-						mat-stroked-button
-						type="submit"
-						ngModel
-						[disabled]="loginForm.form.status === 'INVALID'">
-						Login
-					</button>
-				</mat-card-actions>
-				<p>
-					Not a member yet?
-					<span (click)="isLogin = false" class="action-button">Sign up</span>
-				</p>
-			</form>
-		</mat-card-content>
-	</mat-card>
-	} @else {
-	<mat-card appearance="outlined" class="form-wrapper">
-		<mat-card-content>
-			<form
-				#signupForm="ngForm"
-				(submit)="submitForm(signupForm)"
-				class="form-fields-wrapper">
-				<mat-form-field>
-					<mat-label>Login: </mat-label>
-					<input
-						matInput
-						placeholder="Login... "
-						required
-						type="text"
-						name="login"
-						ngModel />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Password: </mat-label>
-					<input
-						matInput
-						type="password"
-						placeholder="Password... "
-						required
-						[minlength]="4"
-						name="password"
-						ngModel />
-				</mat-form-field>
-				<mat-form-field>
+
+				<mat-form-field *ngIf="!isLogin">
 					<mat-label>Repeat password: </mat-label>
 					<input
 						matInput
 						type="password"
-						placeholder="Repeat password... "
+						placeholder="Repeat password..."
 						required
-						[minlength]="4"
-						name="passwordRepeat"
-						ngModel />
+						formControlName="passwordRepeat" />
 				</mat-form-field>
+
 				<mat-card-actions>
 					<button
 						mat-stroked-button
 						type="submit"
-						ngModel
 						[disabled]="
-							signupForm.invalid ||
-							signupForm.value.password !== signupForm.value.passwordRepeat ||
-							!signupForm.value.password ||
-							!signupForm.value.passwordRepeat
+							isLogin
+								? loginForm.invalid
+								: signupForm.invalid ||
+								  signupForm.value.password !== signupForm.value.passwordRepeat
 						">
-						Login
+						{{ isLogin ? "Login" : "Sign up" }}
 					</button>
 				</mat-card-actions>
+
 				<p>
-					Already a member?
-					<span (click)="isLogin = true" class="action-button">Log In</span>
+					{{ isLogin ? "Not a member yet?" : "Already a member?" }}
+					<span (click)="isLogin = !isLogin" class="action-button">
+						{{ isLogin ? "Sign up" : "Log In" }}
+					</span>
 				</p>
 			</form>
 		</mat-card-content>
 	</mat-card>
-	}
 </div>

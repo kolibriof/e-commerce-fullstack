@@ -2,15 +2,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { CartService } from "../services/cart-service";
 import { AddCartItem, SingleCartItem } from "../helpers/constants";
 import { ToastrService } from "ngx-toastr";
-import {
-	BehaviorSubject,
-	Observable,
-	Subject,
-	catchError,
-	of,
-	take,
-} from "rxjs";
+import { Observable, catchError, of, take } from "rxjs";
 import { Router } from "@angular/router";
+import { PaymentComponent } from "../payment/payment.component";
+
+interface Product {
+	date: string;
+}
 
 @Component({
 	selector: "app-product",
@@ -27,6 +25,10 @@ export class ProductComponent implements OnInit {
 	@Input("owned") owned: boolean = false;
 	@Output("sold") sold = new EventEmitter<boolean>();
 	protected inCart: boolean = true;
+	protected product: { date: string } = {
+		date: "12/09/2024",
+	};
+	protected dateBought: any;
 
 	constructor(
 		private cartService: CartService,
@@ -42,6 +44,7 @@ export class ProductComponent implements OnInit {
 				this.inCart = items.some((item: any) => item.name === this.name);
 			}
 		});
+		this.dateBought = this.getDate(this.product);
 	}
 
 	addItemToCart(name: string): void {
@@ -98,6 +101,20 @@ export class ProductComponent implements OnInit {
 				localStorage.setItem("ecommerce-cart-items", JSON.stringify(data));
 			});
 	}
+
+	private getDate(product: Product) {
+		const options: Intl.DateTimeFormatOptions = {
+			weekday: "short",
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
+		};
+
+		return new Date(product.date).toLocaleString("en-US", options);
+	}
+
 	sellProductById(id: number) {
 		const userFromLS = JSON.parse(
 			localStorage.getItem("ecommerce-loggedin-user") || "",

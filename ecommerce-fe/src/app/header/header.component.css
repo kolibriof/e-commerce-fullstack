@@ -1,0 +1,44 @@
+.home-page-wrapper {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100dvh;
+}
+
+.header {
+	height: 100%;
+	width: 100%;
+	background-color: #f0f0f0;
+}
+
+.nav-buttons:hover {
+	background-color: #ffffff !important;
+	color: black !important;
+}
+
+.greetings {
+	background-color: #ffffff;
+	padding: 0px 10px 0px 10px;
+	border-radius: 8px;
+}
+
+.products {
+	height: 90%;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 20px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(calc(30% - 20px), 1fr));
+}
+
+.navbar-wrapper {
+	gap: 10px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	height: 100%;
+	align-items: center;
+}
+.nav-buttons {
+	color: black !important;
+}

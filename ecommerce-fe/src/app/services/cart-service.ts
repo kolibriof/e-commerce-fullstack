@@ -8,9 +8,9 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 
 @Injectable({ providedIn: "root" })
 export class CartService {
-	private readonly url = "http://localhost:8080";
+	protected readonly url = "http://localhost:8080";
 
-	constructor(private http: HttpClient) {}
+	constructor(protected http: HttpClient) {}
 
 	getCartItems(cart: CartItemsContents) {
 		return this.http.post<SingleCartItem[]>(this.url + "/cart", cart, {

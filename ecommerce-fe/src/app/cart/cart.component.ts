@@ -24,23 +24,36 @@ export class CartComponent implements OnInit {
 	) {}
 	ngOnInit(): void {
 		let cartCreds: CartItemsContents;
-		if (localStorage.getItem("ecommerce-loggedin-user")) {
-			const creds = JSON.parse(
-				localStorage.getItem("ecommerce-loggedin-user") || "",
-			);
+		const storedUser = localStorage.getItem("ecommerce-loggedin-user");
+
+		if (!storedUser) {
+			this.router.navigate(["/login"]);
+			return;
+		}
+
+		try {
+			const creds = JSON.parse(storedUser) as { id: number; login: string };
 			cartCreds = {
 				id: creds.id,
 				username: creds.login,
 			};
-			this.cartService.getCartItems(cartCreds).subscribe((data: any) => {
-				if (data.message) {
-					console.log(data);
-					this.errorMessage = data.message;
-				} else {
-					this.cartItems.next(data);
-				}
+
+			this.cartService.getCartItems(cartCreds).subscribe({
+				next: (data: any) => {
+					if (data.message) {
+						console.error(data.message);
+						this.errorMessage = data.message;
+					} else {
+						this.cartItems.next(data);
+					}
+				},
+				error: (err) => {
+					console.error("Failed to fetch cart items", err);
+					this.errorMessage = "Unable to fetch cart items at the moment.";
+				},
 			});
-		} else {
+		} catch (error) {
+			console.error("Failed to parse user data from localStorage", error);
 			this.router.navigate(["/login"]);
 		}
 	}
@@ -50,7 +63,9 @@ export class CartComponent implements OnInit {
 	}
 
 	removeFromCart(item: SingleCartItem) {
-		if (localStorage.getItem("ecommerce-loggedin-user")) {
+		const storedUser = localStorage.getItem("ecommerce-loggedin-user");
+
+		if (storedUser) {
 			const itemToAdd: AddCartItem = {
 				id: item.person.id,
 				username: item.person.login,
