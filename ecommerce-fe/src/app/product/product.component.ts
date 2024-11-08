@@ -4,7 +4,7 @@ import { AddCartItem, SingleCartItem } from "../helpers/constants";
 import { ToastrService } from "ngx-toastr";
 import { Observable, catchError, of, take } from "rxjs";
 import { Router } from "@angular/router";
-import { PaymentComponent } from "../payment/payment.component";
+import _ from "lodash";
 
 interface Product {
 	date: string;
@@ -41,7 +41,7 @@ export class ProductComponent implements OnInit {
 			if (items.message) {
 				this.inCart = false;
 			} else {
-				this.inCart = items.some((item: any) => item.name === this.name);
+				this.inCart = _.some(items, { name: this.name });
 			}
 		});
 		this.dateBought = this.getDate(this.product);
@@ -119,7 +119,7 @@ export class ProductComponent implements OnInit {
 		const userFromLS = JSON.parse(
 			localStorage.getItem("ecommerce-loggedin-user") || "",
 		);
-		if (userFromLS) {
+		if (!_.isEmpty(userFromLS)) {
 			this.cartService
 				.sellOwnedProduct(id, userFromLS.id, {
 					id: userFromLS.id,
