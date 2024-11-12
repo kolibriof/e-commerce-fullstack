@@ -1,34 +1,65 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { CartService } from "../services/cart-service";
-import { AddCartItem, SingleCartItem } from "../helpers/constants";
-import { ToastrService } from "ngx-toastr";
-import { Observable, catchError, of, take } from "rxjs";
+import {
+	Component,
+	EventEmitter,
+	Input,
+	OnInit,
+	Output,
+	OnDestroy,
+} from "@angular/core";
+import { Observable, Subject, catchError, of, take, takeUntil } from "rxjs";
 import { Router } from "@angular/router";
+import { ToastrService } from "ngx-toastr";
 import _ from "lodash";
 
-interface Product {
+// Services
+import { CartService } from "../services/cart-service";
+
+// Models
+import { AddCartItem, SingleCartItem } from "../helpers/constants";
+
+interface ProductDetails {
 	date: string;
+	formattedDate?: string;
+}
+
+interface StoredUser {
+	id: number;
+	login: string;
 }
 
 @Component({
 	selector: "app-product",
 	templateUrl: "./product.component.html",
-	styleUrl: "./product.component.css",
+	styleUrls: ["./product.component.css"],
 })
-export class ProductComponent implements OnInit {
-	@Input("id") id!: number;
-	@Input("name") name: string = "";
-	@Input("desc") desc: string = "";
-	@Input("img") img: string = "";
-	@Input("cartItems") cartItems: Observable<SingleCartItem[]> = of([]);
-	@Input("price") price: number = 0;
-	@Input("owned") owned: boolean = false;
-	@Output("sold") sold = new EventEmitter<boolean>();
-	protected inCart: boolean = true;
-	protected product: { date: string } = {
+export class ProductComponent implements OnInit, OnDestroy {
+	@Input() id!: number;
+	@Input() name: string = "";
+	@Input() desc: string = "";
+	@Input() img: string = "";
+	@Input() cartItems: Observable<SingleCartItem[]> = of([]);
+	@Input() price: number = 0;
+	@Input() owned: boolean = false;
+	@Output() sold = new EventEmitter<boolean>();
+
+	protected inCart: boolean = false;
+	protected product: ProductDetails = {
 		date: "12/09/2024",
 	};
-	protected dateBought: any;
+	protected dateBought: string = "";
+
+	private destroy$ = new Subject<void>();
+	private readonly USER_STORAGE_KEY = "ecommerce-loggedin-user";
+	private readonly CART_STORAGE_KEY = "ecommerce-cart-items";
+
+	private readonly dateOptions: Intl.DateTimeFormatOptions = {
+		weekday: "short",
+		month: "short",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: true,
+	};
 
 	constructor(
 		private cartService: CartService,
@@ -37,107 +68,147 @@ export class ProductComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		this.cartItems.subscribe((items: any) => {
-			if (items.message) {
-				this.inCart = false;
-			} else {
-				this.inCart = _.some(items, { name: this.name });
-			}
-		});
-		this.dateBought = this.getDate(this.product);
+		this.initializeComponent();
+	}
+
+	ngOnDestroy(): void {
+		this.destroy$.next();
+		this.destroy$.complete();
 	}
 
 	addItemToCart(name: string): void {
-		let userFromLS: any;
-		let itemToAdd: AddCartItem;
+		const storedUser = this.getStoredUser();
 
-		if (localStorage.getItem("ecommerce-loggedin-user")) {
-			userFromLS = JSON.parse(
-				localStorage.getItem("ecommerce-loggedin-user") || "",
-			);
-
-			itemToAdd = {
-				id: userFromLS.id,
-				username: userFromLS.login,
-				product_name: name,
-			};
-
-			if (!this.inCart) {
-				this.cartService.addItemToCart(itemToAdd).subscribe((data: any) => {
-					this.inCart = true;
-					this.loadLatestItems(userFromLS.id, userFromLS.login);
-					this.toastr.success(data.message, data.cause);
-				});
-				return;
-			}
-			this.cartService
-				.deleteItemFromCart(itemToAdd)
-				.pipe(
-					catchError((err) => {
-						this.toastr.error(err.error.message);
-						return of();
-					}),
-				)
-				.subscribe((data: any) => {
-					this.inCart = false;
-
-					this.toastr.info(data.message, data.cause);
-					this.loadLatestItems(userFromLS.id, userFromLS.login);
-				});
-		} else {
+		if (!storedUser) {
 			this.router.navigate(["/login"]);
+			return;
+		}
+
+		const itemToAdd = this.createCartItem(storedUser, name);
+
+		if (!this.inCart) {
+			this.addItem(itemToAdd);
+		} else {
+			this.removeItem(itemToAdd);
 		}
 	}
 
-	private loadLatestItems(id: any, login: any) {
-		this.cartService
-			.getCartItems({
-				id: id,
-				username: login,
-			})
-			.pipe(take(1))
-			.subscribe((data) => {
-				console.log(data);
-				localStorage.setItem("ecommerce-cart-items", JSON.stringify(data));
+	sellProductById(id: number): void {
+		const storedUser = this.getStoredUser();
+
+		if (!storedUser) {
+			this.router.navigate(["/login"]);
+			return;
+		}
+
+		this.sellProduct(id, storedUser);
+	}
+
+	private initializeComponent(): void {
+		this.setupCartItemsSubscription();
+		this.formatProductDate();
+	}
+
+	private setupCartItemsSubscription(): void {
+		this.cartItems
+			.pipe(takeUntil(this.destroy$))
+			.subscribe((items: SingleCartItem[] | any) => {
+				this.inCart = items.message
+					? false
+					: _.some(items, { name: this.name });
 			});
 	}
 
-	private getDate(product: Product) {
-		const options: Intl.DateTimeFormatOptions = {
-			weekday: "short",
-			month: "short",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: true,
-		};
-
-		return new Date(product.date).toLocaleString("en-US", options);
+	private formatProductDate(): void {
+		this.dateBought = new Date(this.product.date).toLocaleString(
+			"en-US",
+			this.dateOptions,
+		);
 	}
 
-	sellProductById(id: number) {
-		const userFromLS = JSON.parse(
-			localStorage.getItem("ecommerce-loggedin-user") || "",
-		);
-		if (!_.isEmpty(userFromLS)) {
-			this.cartService
-				.sellOwnedProduct(id, userFromLS.id, {
-					id: userFromLS.id,
-					username: userFromLS.login,
-				})
-				.pipe(
-					take(1),
-					catchError((data) => {
-						this.toastr.error(data.error.cause, data.error.message);
-						return of();
-					}),
-				)
-				.subscribe((data: any) => {
-					this.sold.emit(true);
-					this.toastr.success(data.cause, data.message);
-				});
-		} else {
-			this.router.navigate(["/login"]);
+	private getStoredUser(): StoredUser | null {
+		try {
+			const userStr = localStorage.getItem(this.USER_STORAGE_KEY);
+			return userStr ? JSON.parse(userStr) : null;
+		} catch (error) {
+			console.error("Error parsing stored user:", error);
+			return null;
 		}
+	}
+
+	private createCartItem(user: StoredUser, productName: string): AddCartItem {
+		return {
+			id: user.id,
+			username: user.login,
+			product_name: productName,
+		};
+	}
+
+	private addItem(item: AddCartItem): void {
+		this.cartService
+			.addItemToCart(item)
+			.pipe(
+				take(1),
+				takeUntil(this.destroy$),
+				catchError(this.handleError.bind(this)),
+			)
+			.subscribe((response: any) => {
+				this.handleCartSuccess(response, true);
+				this.loadLatestItems(item.id, item.username);
+			});
+	}
+
+	private removeItem(item: AddCartItem): void {
+		this.cartService
+			.deleteItemFromCart(item)
+			.pipe(
+				take(1),
+				takeUntil(this.destroy$),
+				catchError(this.handleError.bind(this)),
+			)
+			.subscribe((response: any) => {
+				this.handleCartSuccess(response, false);
+				this.loadLatestItems(item.id, item.username);
+			});
+	}
+
+	private sellProduct(productId: number, user: StoredUser): void {
+		this.cartService
+			.sellOwnedProduct(productId, user.id, {
+				id: user.id,
+				username: user.login,
+			})
+			.pipe(
+				take(1),
+				takeUntil(this.destroy$),
+				catchError(this.handleError.bind(this)),
+			)
+			.subscribe((response: any) => {
+				this.sold.emit(true);
+				this.toastr.success(response.cause, response.message);
+			});
+	}
+
+	private loadLatestItems(userId: number, username: string): void {
+		this.cartService
+			.getCartItems({
+				id: userId,
+				username: username,
+			})
+			.pipe(take(1), takeUntil(this.destroy$))
+			.subscribe((data: SingleCartItem[]) => {
+				localStorage.setItem(this.CART_STORAGE_KEY, JSON.stringify(data));
+			});
+	}
+
+	private handleCartSuccess(response: any, isAdding: boolean): void {
+		this.inCart = isAdding;
+		const toastrMethod = isAdding ? "success" : "info";
+		this.toastr[toastrMethod](response.message, response.cause);
+	}
+
+	private handleError(error: any) {
+		this.toastr.error(error.error?.message || "An error occurred");
+		return of(null);
 	}
 }
